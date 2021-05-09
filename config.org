@@ -27,6 +27,7 @@
   - [[#docker][Docker]]
   - [[#elixir][Elixir]]
   - [[#javascript][JavaScript]]
+  - [[#gleam][Gleam]]
   - [[#go][Go]]
   - [[#plantuml][PlantUML]]
   - [[#protobuf][Protobuf]]
@@ -535,6 +536,8 @@ Collapse single files in nested directories.
 	 (before-save . tide-format-before-save)
 	 (before-save . global-prettier-mode)))
 #+END_SRC
+
+** Gleam
 
 #+BEGIN_SRC emacs-lisp
 ;; Gleam

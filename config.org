@@ -1,6 +1,51 @@
 #+TITLE: Emacs Config
 #+PROPERTY: header-args :tangle "~/.emacs.d/init.el"
-#+OPTIONS: toc
+
+* Table of Contents :TOC:
+- [[#lexical-binding][Lexical Binding]]
+- [[#custom][Custom]]
+- [[#package-management][Package Management]]
+  - [[#updating][Updating]]
+- [[#theme][Theme]]
+- [[#window-manager][Window Manager]]
+- [[#general][General]]
+  - [[#environment-variables][Environment Variables]]
+  - [[#multiple-cursors][Multiple Cursors]]
+  - [[#which-key][Which Key]]
+- [[#ui][UI]]
+  - [[#mode-line][Mode line]]
+  - [[#ivy][Ivy]]
+  - [[#amx][Amx]]
+  - [[#dashboard][Dashboard]]
+  - [[#font][Font]]
+- [[#file-browsing][File Browsing]]
+- [[#treemacs][Treemacs]]
+- [[#lsp][LSP]]
+- [[#debugging][Debugging]]
+- [[#languages][Languages]]
+  - [[#assembly][Assembly]]
+  - [[#docker][Docker]]
+  - [[#elixir][Elixir]]
+  - [[#javascript][JavaScript]]
+  - [[#go][Go]]
+  - [[#plantuml][PlantUML]]
+  - [[#protobuf][Protobuf]]
+  - [[#reason][Reason]]
+  - [[#rust][Rust]]
+  - [[#sql][SQL]]
+  - [[#toml][TOML]]
+  - [[#yaml][YAML]]
+- [[#snippets][Snippets]]
+- [[#version-control][Version Control]]
+  - [[#general-1][General]]
+  - [[#git][Git]]
+- [[#terminal][Terminal]]
+- [[#org][Org]]
+- [[#company][Company]]
+- [[#kubernetes][Kubernetes]]
+- [[#projectile][Projectile]]
+- [[#server][Server]]
+- [[#provide][Provide]]
 
 * Lexical Binding
 
@@ -10,7 +55,7 @@
 ;;; Code:
 #+END_SRC
 
-** Custom
+* Custom
 
 #+BEGIN_SRC emacs-lisp
 ;; Send customize variables to separate file

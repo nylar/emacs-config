@@ -359,8 +359,7 @@
   (setq dashboard-center-content t)
   (setq dashboard-set-footer nil)
   (setq dashboard-startup-banner 'logo)
-  (setq dashboard-items '((projects . 5)
-			  (recents . 5)))
+  (setq dashboard-items '((projects . 10)))
   (dashboard-setup-startup-hook))
 #+END_SRC
 

@@ -29,6 +29,7 @@
   - [[#javascript][JavaScript]]
   - [[#gleam][Gleam]]
   - [[#go][Go]]
+  - [[#nix][Nix]]
   - [[#plantuml][PlantUML]]
   - [[#protobuf][Protobuf]]
   - [[#reason][Reason]]
@@ -444,9 +445,9 @@ Collapse single files in nested directories.
     (add-hook 'go-mode-hook #'lsp)
     (add-hook 'typescript-mode-hook #'lsp)
     (add-hook 'elixir-mode-hook #'lsp)
-    ;;(add-hook 'js-mode-hook #'lsp)
     (add-hook 'yaml-mode-hook #'lsp)
     (add-hook 'terraform-mode-hook #'lsp)
+	(add-hook 'nix-mode-hook #'lsp)
     :bind (("C-c h" . lsp-describe-thing-at-point)))
 
   (use-package lsp-ui)
@@ -508,7 +509,6 @@ Collapse single files in nested directories.
 ** Docker
 
 #+BEGIN_SRC emacs-lisp
-;; Dockerfile
 (use-package dockerfile-mode)
 #+END_SRC
 
@@ -516,7 +516,6 @@ Collapse single files in nested directories.
 
 
 #+BEGIN_SRC emacs-lisp
-;; Elixir
 (use-package elixir-mode)
 
 (add-hook 'elixir-mode-hook
@@ -526,7 +525,6 @@ Collapse single files in nested directories.
 ** JavaScript
 
 #+BEGIN_SRC emacs-lisp
-;; JavaScript/TypeScript
 (use-package tide
   :ensure t
   :after (typescript-mode company flycheck)
@@ -539,7 +537,6 @@ Collapse single files in nested directories.
 ** Gleam
 
 #+BEGIN_SRC emacs-lisp
-;; Gleam
 (load-file "~/.emacs.d/private/gleam-mode/gleam-mode.el")
 (require 'gleam-mode)
 (add-to-list 'auto-mode-alist '("\\.gleam$" . gleam-mode))
@@ -548,12 +545,17 @@ Collapse single files in nested directories.
 ** Go
 
 #+BEGIN_SRC emacs-lisp
-;; Go
 (use-package go-mode
   :config
   (setq gofmt-command "goimports")
   :hook ((go-mode . flycheck-mode)
 	 (before-save . gofmt-before-save)))
+#+END_SRC
+
+** Nix
+
+#+BEGIN_SRC emacs-lisp
+(use-package nix-mode)
 #+END_SRC
 
 ** PlantUML
@@ -569,7 +571,6 @@ Collapse single files in nested directories.
 ** Protobuf
 
 #+BEGIN_SRC emacs-lisp
-;; Protobuf
 (use-package protobuf-mode)
 #+END_SRC
 
@@ -583,7 +584,6 @@ Collapse single files in nested directories.
 ** Rust
 
 #+BEGIN_SRC emacs-lisp
-;; Rust
 (use-package racer)
 
 (use-package rustic
@@ -620,7 +620,6 @@ Collapse single files in nested directories.
 ** YAML
 
 #+BEGIN_SRC emacs-lisp
-;; YAML
 (use-package yaml-mode
   :hook ((yaml-mode . flycheck-mode)
 	 (yaml-mode . display-line-numbers-mode)))

@@ -448,6 +448,7 @@ Collapse single files in nested directories.
     (add-hook 'yaml-mode-hook #'lsp)
     (add-hook 'terraform-mode-hook #'lsp)
 	(add-hook 'nix-mode-hook #'lsp)
+	(add-hook 'scala-mode-hook #'lsp)
     :bind (("C-c h" . lsp-describe-thing-at-point)))
 
   (use-package lsp-ui)
@@ -596,6 +597,16 @@ Collapse single files in nested directories.
 	 (racer-mode . eldoc-mode)))
 
 (push 'rustic-clippy flycheck-checkers)
+#+END_SRC
+
+** Scala
+
+#+BEGIN_SRC emacs-lisp
+(use-package scala-mode
+  :interpreter
+  ("scala" . scala-mode))
+
+(use-package lsp-metals)
 #+END_SRC
 
 ** SQL

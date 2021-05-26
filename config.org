@@ -34,6 +34,7 @@
   - [[#protobuf][Protobuf]]
   - [[#reason][Reason]]
   - [[#rust][Rust]]
+  - [[#scala][Scala]]
   - [[#sql][SQL]]
   - [[#toml][TOML]]
   - [[#yaml][YAML]]

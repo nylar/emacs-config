@@ -674,7 +674,9 @@ Collapse single files in nested directories.
   (global-set-key (kbd "C-x M-g") 'magit-dispatch))
 
 (use-package forge
-  :after magit)
+  :after magit
+  :config
+  (global-set-key (kbd "C-x M-f") 'forge-dispatch))
 
 ;; cargo install delta
 (use-package magit-delta

@@ -5,7 +5,6 @@
 - [[#lexical-binding][Lexical Binding]]
 - [[#custom][Custom]]
 - [[#package-management][Package Management]]
-  - [[#updating][Updating]]
 - [[#theme][Theme]]
 - [[#window-manager][Window Manager]]
 - [[#general][General]]
@@ -26,9 +25,8 @@
   - [[#assembly][Assembly]]
   - [[#docker][Docker]]
   - [[#elixir][Elixir]]
-  - [[#javascript][JavaScript]]
-  - [[#gleam][Gleam]]
   - [[#go][Go]]
+  - [[#javascript][JavaScript]]
   - [[#nix][Nix]]
   - [[#plantuml][PlantUML]]
   - [[#protobuf][Protobuf]]
@@ -71,31 +69,28 @@
 
 #+BEGIN_SRC emacs-lisp
 ;;; Package management
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-(package-initialize)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package)
-  (eval-when-compile (require 'use-package)))
+(straight-use-package 'use-package)
 
 ;; Always want packages to be fetched if not present
-(setq use-package-always-ensure t)
+(setq straight-use-package-by-default t)
 
 ;; Compile packages natively
 (setq package-native-compile t)
 
 (use-package diminish)
-#+END_SRC
-
-** Updating
-
-#+BEGIN_SRC emacs-lisp
-(use-package auto-package-update
-  :config
-  (setq auto-package-update-delete-old-versions t))
 #+END_SRC
 
 * Theme
@@ -319,12 +314,6 @@
   (ivy-mode t)
   (setq ivy-initial-inputs-alist nil))
 
-;; Ivy rich
-(use-package ivy-rich
-  :config
-  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-  (ivy-rich-mode 1))
-
 ;;; Counsel
 (use-package counsel
   :after ivy
@@ -333,6 +322,12 @@
   :bind (("M-x" . counsel-M-x)
 	 ("C-c r" . counsel-rg)
 	 ("C-c e" . counsel-linux-app)))
+
+;; Ivy rich
+(use-package ivy-rich
+  :config
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
+  (ivy-rich-mode 1))
 
 ;;; Swiper
 (use-package swiper
@@ -362,7 +357,8 @@
   (setq dashboard-center-content t)
   (setq dashboard-set-footer nil)
   (setq dashboard-startup-banner 'logo)
-  (setq dashboard-items '((projects . 10)))
+  (setq dashboard-items '((projects . 5)
+			  (recents . 5)))
   (dashboard-setup-startup-hook))
 #+END_SRC
 
@@ -527,6 +523,16 @@ Collapse single files in nested directories.
 	  (lambda () (add-hook 'before-save-hook 'elixir-format nil t)))
 #+END_SRC
 
+** Go
+
+#+BEGIN_SRC emacs-lisp
+(use-package go-mode
+  :config
+  (setq gofmt-command "goimports")
+  :hook ((go-mode . flycheck-mode)
+	 (before-save . gofmt-before-save)))
+#+END_SRC
+
 ** JavaScript
 
 #+BEGIN_SRC emacs-lisp
@@ -539,22 +545,10 @@ Collapse single files in nested directories.
 	 (before-save . global-prettier-mode)))
 #+END_SRC
 
-** Gleam
-
 #+BEGIN_SRC emacs-lisp
 (load-file "~/.emacs.d/private/gleam-mode/gleam-mode.el")
 (require 'gleam-mode)
 (add-to-list 'auto-mode-alist '("\\.gleam$" . gleam-mode))
-#+END_SRC
-
-** Go
-
-#+BEGIN_SRC emacs-lisp
-(use-package go-mode
-  :config
-  (setq gofmt-command "goimports")
-  :hook ((go-mode . flycheck-mode)
-	 (before-save . gofmt-before-save)))
 #+END_SRC
 
 ** Nix
@@ -600,6 +594,8 @@ Collapse single files in nested directories.
   (add-hook 'lsp-mode (lambda () (lsp-rust-analyzer-inlay-hints-mode)))
   :hook ((rust-mode . racer-mode)
 	 (racer-mode . eldoc-mode)))
+
+(push 'rustic-clippy flycheck-checkers)
 #+END_SRC
 
 ** Scala
@@ -738,6 +734,8 @@ Collapse single files in nested directories.
 (require 'org-tempo)
 
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+
+(use-package toc-org)
 #+END_SRC
 
 * Company
@@ -776,14 +774,6 @@ Collapse single files in nested directories.
   (setq projectile-switch-project-action 'projectile-dired)
   (setq projectile-git-submodule-command nil)
   :bind (("C-c p f" . projectile-find-file)))
-#+END_SRC
-
-* Server
-
-#+BEGIN_SRC emacs-lisp
-(require 'server)
-(unless (server-running-p)
-  (server-start))
 #+END_SRC
 
 * Provide

@@ -26,6 +26,7 @@
   - [[#docker][Docker]]
   - [[#elixir][Elixir]]
   - [[#go][Go]]
+  - [[#graphql][GraphQL]]
   - [[#javascript][JavaScript]]
   - [[#nix][Nix]]
   - [[#plantuml][PlantUML]]
@@ -46,7 +47,6 @@
 - [[#company][Company]]
 - [[#kubernetes][Kubernetes]]
 - [[#projectile][Projectile]]
-- [[#server][Server]]
 - [[#provide][Provide]]
 
 * Lexical Binding
@@ -531,6 +531,12 @@ Collapse single files in nested directories.
   (setq gofmt-command "goimports")
   :hook ((go-mode . flycheck-mode)
 	 (before-save . gofmt-before-save)))
+#+END_SRC
+
+** GraphQL
+
+#+BEGIN_SRC emacs-lisp
+(use-package graphql-mode)
 #+END_SRC
 
 ** JavaScript

@@ -11,12 +11,14 @@
   - [[#environment-variables][Environment Variables]]
   - [[#multiple-cursors][Multiple Cursors]]
   - [[#which-key][Which Key]]
+  - [[#case-conversion][Case Conversion]]
 - [[#ui][UI]]
   - [[#mode-line][Mode line]]
   - [[#ivy][Ivy]]
   - [[#amx][Amx]]
   - [[#dashboard][Dashboard]]
   - [[#font][Font]]
+  - [[#bufler][Bufler]]
 - [[#file-browsing][File Browsing]]
 - [[#treemacs][Treemacs]]
 - [[#lsp][LSP]]
@@ -29,12 +31,14 @@
   - [[#graphql][GraphQL]]
   - [[#javascript][JavaScript]]
   - [[#nix][Nix]]
+  - [[#ocaml][OCaml]]
   - [[#plantuml][PlantUML]]
   - [[#protobuf][Protobuf]]
-  - [[#reason][Reason]]
+  - [[#rescript][Rescript]]
   - [[#rust][Rust]]
   - [[#scala][Scala]]
   - [[#sql][SQL]]
+  - [[#terraform][Terraform]]
   - [[#toml][TOML]]
   - [[#yaml][YAML]]
   - [[#zig][Zig]]
@@ -47,6 +51,7 @@
 - [[#company][Company]]
 - [[#kubernetes][Kubernetes]]
 - [[#projectile][Projectile]]
+- [[#server][Server]]
 - [[#provide][Provide]]
 
 * Lexical Binding
@@ -151,11 +156,6 @@
                             (exwm-workspace-switch-create ,(- i 1)))))
                       (number-sequence 0 9))))
   :bind (("C-c C-q" . exwm-input-send-next-key)))
-
-(use-package desktop-environment
-  :diminish desktop-environment-mode
-  :config
-  (desktop-environment-mode))
 #+END_SRC
 
 * General
@@ -208,6 +208,9 @@
 
 ;; Allow larger process payloads to be read
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
+
+;; Never tabs
+(setq indent-tabs-mode nil)
 #+END_SRC
 
 ** Environment Variables
@@ -238,6 +241,13 @@
   :diminish which-key-mode
   :config
   (which-key-mode))
+#+END_SRC
+
+** Case Conversion
+
+#+BEGIN_SRC emacs-lisp
+(use-package string-inflection
+  :bind (("C-c C-n" . string-inflection-java-style-cycle)))
 #+END_SRC
 
 * UI
@@ -369,6 +379,36 @@
 (set-frame-font "JetBrains Mono-11" nil t)
 #+END_SRC
 
+** Bufler
+
+#+BEGIN_SRC emacs-lisp
+(use-package bufler
+  :diminish bufler-mode
+  :bind
+  (("C-x b" . bufler-switch-buffer)
+   ("C-x B" . bufler-workspace-focus-buffer)
+   ("C-x C-b" . bufler))
+
+  :custom
+  (bufler-groups
+   (bufler-defgroups
+	(group (auto-workspace))
+	(group
+	 (mode-match "*Kubel*" (rx bos "*kubel-")))
+	(group
+	 (auto-projectile))
+	(group
+	 (auto-project))
+	(auto-directory)
+	(auto-mode)))
+  (bufler-workspace-mode t))
+#+END_SRC
+
+,#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil :font "JetBrains Mono-11")
+(set-frame-font "JetBrains Mono-11" nil t)
+#+END_SRC
+
 * File Browsing
 
 Reuse the current dired buffer.
@@ -427,13 +467,13 @@ Collapse single files in nested directories.
 * LSP
 
 #+BEGIN_SRC emacs-lisp
-;;; LSP
 (use-package lsp-mode
   :init
   (setq lsp-keymap-prefix "C-c l")
   :hook
   (elixir-mode . lsp)
   (go-mode . lsp)
+  (java-mode . lsp)
   (nix-mode . lsp)
   (scala-mode . lsp)
   (terraform-mode . lsp)
@@ -450,6 +490,8 @@ Collapse single files in nested directories.
   (add-to-list 'lsp-file-watch-ignored "[/\\\\].git$")
   (add-to-list 'lsp-file-watch-ignored "[/\\\\].submodules$")
   :bind (("C-c h" . lsp-describe-thing-at-point)))
+
+(use-package lsp-java)
 
 (use-package lsp-ui)
 
@@ -496,7 +538,8 @@ Collapse single files in nested directories.
 (show-paren-mode 1)
 
 (use-package prettier
-  :config)
+  :config
+  :bind (("C-c C-p" . prettier-prettify)))
 #+END_SRC
 
 ** Assembly
@@ -563,6 +606,20 @@ Collapse single files in nested directories.
 (use-package nix-mode)
 #+END_SRC
 
+** OCaml
+
+#+BEGIN_SRC emacs-lisp
+(use-package tuareg)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package dune)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package ocamlformat)
+#+END_SRC
+
 ** PlantUML
 
 #+BEGIN_SRC emacs-lisp
@@ -579,11 +636,10 @@ Collapse single files in nested directories.
 (use-package protobuf-mode)
 #+END_SRC
 
-** Reason
+** Rescript
 
 #+BEGIN_SRC emacs-lisp
-(use-package reason-mode
-  :hook ((before-save . refmt-before-save)))
+(use-package rescript-mode)
 #+END_SRC
 
 ** Rust
@@ -623,6 +679,13 @@ Collapse single files in nested directories.
 	    :ensure nil
 	    :after ejc-sql-mode
 	    :config (add-to-list (make-local-variable 'company-backends) 'ejc-company-backend)))
+#+END_SRC
+
+** Terraform
+
+#+BEGIN_SRC emacs-lisp
+(use-package terraform-mode
+  :hook (terraform-mode . terraform-format-on-save-mode))
 #+END_SRC
 
 ** TOML
@@ -691,9 +754,7 @@ Collapse single files in nested directories.
   (add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1))))
 
 ;; Syntax highlighting for various git related files
-(use-package gitignore-mode)
-(use-package gitconfig-mode)
-(use-package gitattributes-mode)
+(use-package git-modes)
 
 (use-package diff-hl
   :config
@@ -782,6 +843,12 @@ Collapse single files in nested directories.
   (setq projectile-switch-project-action 'projectile-dired)
   (setq projectile-git-submodule-command nil)
   :bind (("C-c p f" . projectile-find-file)))
+#+END_SRC
+
+* Server
+
+#+BEGIN_SRC emacs-lisp
+(server-start)
 #+END_SRC
 
 * Provide

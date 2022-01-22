@@ -18,7 +18,6 @@
   - [[#amx][Amx]]
   - [[#dashboard][Dashboard]]
   - [[#font][Font]]
-  - [[#bufler][Bufler]]
 - [[#file-browsing][File Browsing]]
 - [[#treemacs][Treemacs]]
 - [[#lsp][LSP]]
@@ -35,6 +34,7 @@
   - [[#plantuml][PlantUML]]
   - [[#protobuf][Protobuf]]
   - [[#rescript][Rescript]]
+  - [[#ron-rusty-object-notation][RON (Rusty Object Notation)]]
   - [[#rust][Rust]]
   - [[#scala][Scala]]
   - [[#sql][SQL]]
@@ -127,14 +127,17 @@
 
   (exwm-randr-enable)
   (exwm-config-example)
-  (setq exwm-workspace-number 3)
+  (setq exwm-workspace-number 4)
+  (setq exwm-manage-configurations
+   '(((member exwm-class-name '("Nightly"))
+	   char-mode t)))
 
   ;; Config example turns on ido, turn it off
   (ido-mode 0)
   ;; Map start workspaces to names
   (setq exwm-workspace-index-map
 	(lambda (index)
-	  (let ((named-workspaces ["dev" "www" "mail"]))
+	  (let ((named-workspaces ["dev" "www" "k8s" "music"]))
             (if (< index (length named-workspaces))
 		(elt named-workspaces index)
 	      (number-to-string (1+ index))))))
@@ -211,6 +214,9 @@
 
 ;; Never tabs
 (setq indent-tabs-mode nil)
+
+;; Prevent the creation of backup files
+(setq make-backup-files nil)
 #+END_SRC
 
 ** Environment Variables
@@ -312,6 +318,38 @@
                              (evil   . (telephone-line-airline-position-segment))))
 
   (telephone-line-mode 1))
+
+(use-package battery
+  :config
+  (setq battery-mode-line-format "[%b%p%%] ")
+  (setq battery-mode-line-limit 99)
+  (setq battery-update-interval 180)
+  (setq battery-load-low 20)
+  (setq battery-load-critical 10)
+  (display-battery-mode -1))
+#+END_SRC
+
+** Status Bar
+
+#+BEGIN_SRC emacs-lisp
+(use-package minibuffer-line
+  :custom-face
+  (minibuffer-line ((t (:inherit font-lock-doc-face))))
+  :config
+  (setq minibuffer-line-refresh-interval 1)
+  (setq minibuffer-line-format '((:eval
+                                  (let ((time-info (format-time-string "%F %H:%M:%S"))
+                                        (batt-info (battery-format "%b%p%%%% (%t)" (funcall battery-status-function))))
+                                    (concat time-info " | " batt-info)))))
+  (minibuffer-line-mode))
+#+END_SRC
+
+** Minibuffer
+
+#+BEGIN_SRC emacs-lisp
+(use-package minibuffer-line
+  :config
+  (setq minibuffer-line-refresh-interval 1))
 #+END_SRC
 
 ** Ivy
@@ -375,36 +413,6 @@
 ** Font
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "JetBrains Mono-11")
-(set-frame-font "JetBrains Mono-11" nil t)
-#+END_SRC
-
-** Bufler
-
-#+BEGIN_SRC emacs-lisp
-(use-package bufler
-  :diminish bufler-mode
-  :bind
-  (("C-x b" . bufler-switch-buffer)
-   ("C-x B" . bufler-workspace-focus-buffer)
-   ("C-x C-b" . bufler))
-
-  :custom
-  (bufler-groups
-   (bufler-defgroups
-	(group (auto-workspace))
-	(group
-	 (mode-match "*Kubel*" (rx bos "*kubel-")))
-	(group
-	 (auto-projectile))
-	(group
-	 (auto-project))
-	(auto-directory)
-	(auto-mode)))
-  (bufler-workspace-mode t))
-#+END_SRC
-
-,#+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil :font "JetBrains Mono-11")
 (set-frame-font "JetBrains Mono-11" nil t)
 #+END_SRC
@@ -642,6 +650,12 @@ Collapse single files in nested directories.
 (use-package rescript-mode)
 #+END_SRC
 
+** RON (Rusty Object Notation)
+
+#+BEGIN_SRC emacs-lisp
+(use-package ron-mode)
+#+END_SRC
+
 ** Rust
 
 #+BEGIN_SRC emacs-lisp
@@ -776,7 +790,7 @@ Collapse single files in nested directories.
   (setq vterm-buffer-name-string "vterm %s"))
 
 (use-package multi-vterm
-  :bind (("C-c t" . vterm)))
+  :bind (("C-c t" . multi-vterm-project)))
 
 (use-package vterm-toggle
   :bind (("C-x w" . vterm-toggle-cd))

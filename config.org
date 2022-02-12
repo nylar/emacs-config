@@ -102,11 +102,12 @@
 
 #+BEGIN_SRC emacs-lisp
 ;;; Theme
-(use-package base16-theme
-  :init
-  (setq base16-distinct-fringe-background nil)
+(use-package all-the-icons)
+
+(use-package kaolin-themes
   :config
-  (load-theme 'base16-rose-pine t))
+  (load-theme 'kaolin-blossom t)
+  (kaolin-treemacs-theme))
 #+END_SRC
 
 * Window Manager
@@ -588,6 +589,12 @@ Collapse single files in nested directories.
 
 #+BEGIN_SRC emacs-lisp
 (use-package graphql-mode)
+#+END_SRC
+
+** Groovy
+
+#+BEGIN_SRC emacs-lisp
+(use-package groovy-mode)
 #+END_SRC
 
 ** JavaScript

@@ -130,7 +130,7 @@
   (exwm-config-example)
   (setq exwm-workspace-number 4)
   (setq exwm-manage-configurations
-   '(((member exwm-class-name '("Nightly"))
+   '(((member exwm-class-name '("Nightly" "firefox-nightly"))
 	   char-mode t)))
 
   ;; Config example turns on ido, turn it off

@@ -105,12 +105,15 @@
 
 #+BEGIN_SRC emacs-lisp
 ;;; Theme
-(use-package all-the-icons)
-
-(use-package kaolin-themes
+(use-package gruvbox-theme
   :config
-  (load-theme 'kaolin-blossom t)
-  (kaolin-treemacs-theme))
+  (load-theme 'gruvbox-dark-hard t)
+  (let ((custom--inhibit-theme-enable nil))
+    (custom-theme-set-faces
+     'gruvbox-dark-hard
+     '(line-number ((t (:background "#282828" :foreground "#7c6f64"))) t)
+     '(line-number-current-line ((t (:background "#282828" :foreground "#d5c4a1"))) t)
+     '(hl-line ((t (:background "#282828"))) t))))
 #+END_SRC
 
 * Window Manager
@@ -338,7 +341,7 @@
 #+BEGIN_SRC emacs-lisp
 (use-package minibuffer-line
   :custom-face
-  (minibuffer-line ((t (:inherit font-lock-doc-face))))
+  (minibuffer-line ((t (:inherit font-lock-comment-face))))
   :config
   (setq minibuffer-line-refresh-interval 1)
   (setq minibuffer-line-format '((:eval

@@ -113,7 +113,11 @@
      'gruvbox-dark-hard
      '(line-number ((t (:background "#282828" :foreground "#7c6f64"))) t)
      '(line-number-current-line ((t (:background "#282828" :foreground "#d5c4a1"))) t)
-     '(hl-line ((t (:background "#282828"))) t))))
+     '(hl-line ((t (:background "#282828"))) t)
+     '(ivy-current-match ((t (:foreground "#d3869b" :underline nil))) t)
+     '(button ((t (:underline nil))) t)
+     '(mode-line-highlight ((t (:box nil :foreground "#fdf4c1"))) t)
+     '(term-color-black ((t (:background "#7c6f64"))) t))))
 #+END_SRC
 
 * Window Manager
@@ -420,8 +424,8 @@
 ** Font
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil :font "JetBrains Mono-11")
-(set-frame-font "JetBrains Mono-11" nil t)
+(set-face-attribute 'default nil :font "Iosevka-12")
+(set-frame-font "Iosevka-12" nil t)
 #+END_SRC
 
 * File Browsing

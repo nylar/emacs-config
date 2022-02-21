@@ -116,6 +116,7 @@
      '(hl-line ((t (:background "#282828"))) t)
      '(ivy-current-match ((t (:foreground "#d3869b" :underline nil))) t)
      '(button ((t (:underline nil))) t)
+     '(lsp-ui-doc-background ((t (:background "#282828"))) t)
      '(mode-line-highlight ((t (:box nil :foreground "#fdf4c1"))) t)
      '(term-color-black ((t (:background "#7c6f64"))) t))))
 #+END_SRC
@@ -490,6 +491,8 @@ Collapse single files in nested directories.
   :init
   (setq lsp-keymap-prefix "C-c l")
   :hook
+  (c-mode . lsp)
+  (c++-mode . lsp)
   (elixir-mode . lsp)
   (go-mode . lsp)
   (java-mode . lsp)

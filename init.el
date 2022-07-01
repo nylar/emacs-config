@@ -1,81 +1,11 @@
-#+TITLE: Emacs Config
-#+PROPERTY: header-args :tangle "init.el"
-
-* Table of Contents :TOC:
-- [[#lexical-binding][Lexical Binding]]
-- [[#custom][Custom]]
-- [[#package-management][Package Management]]
-- [[#theme][Theme]]
-- [[#window-manager][Window Manager]]
-- [[#general][General]]
-  - [[#environment-variables][Environment Variables]]
-  - [[#multiple-cursors][Multiple Cursors]]
-  - [[#which-key][Which Key]]
-  - [[#case-conversion][Case Conversion]]
-- [[#ui][UI]]
-  - [[#mode-line][Mode line]]
-  - [[#status-bar][Status Bar]]
-  - [[#minibuffer][Minibuffer]]
-  - [[#ivy][Ivy]]
-  - [[#amx][Amx]]
-  - [[#dashboard][Dashboard]]
-  - [[#font][Font]]
-- [[#file-browsing][File Browsing]]
-- [[#treemacs][Treemacs]]
-- [[#lsp][LSP]]
-- [[#debugging][Debugging]]
-- [[#languages][Languages]]
-  - [[#assembly][Assembly]]
-  - [[#docker][Docker]]
-  - [[#elixir][Elixir]]
-  - [[#go][Go]]
-  - [[#graphql][GraphQL]]
-  - [[#groovy][Groovy]]
-  - [[#javascript][JavaScript]]
-  - [[#nix][Nix]]
-  - [[#ocaml][OCaml]]
-  - [[#plantuml][PlantUML]]
-  - [[#protobuf][Protobuf]]
-  - [[#rescript][Rescript]]
-  - [[#ron-rusty-object-notation][RON (Rusty Object Notation)]]
-  - [[#rust][Rust]]
-  - [[#scala][Scala]]
-  - [[#sql][SQL]]
-  - [[#terraform][Terraform]]
-  - [[#toml][TOML]]
-  - [[#yaml][YAML]]
-  - [[#zig][Zig]]
-- [[#snippets][Snippets]]
-- [[#version-control][Version Control]]
-  - [[#general-1][General]]
-  - [[#git][Git]]
-- [[#terminal][Terminal]]
-- [[#org][Org]]
-- [[#company][Company]]
-- [[#kubernetes][Kubernetes]]
-- [[#projectile][Projectile]]
-- [[#server][Server]]
-- [[#provide][Provide]]
-
-* Lexical Binding
-
-#+BEGIN_SRC emacs-lisp
 ;;; init.el -*- lexical-binding: t; -*-
 
 ;;; Code:
-#+END_SRC
 
-* Custom
-
-#+BEGIN_SRC emacs-lisp
 ;; Send customize variables to separate file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
-#+END_SRC
 
-* Package Management
-
-#+BEGIN_SRC emacs-lisp
 ;;; Package management
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -99,20 +29,12 @@
 (setq package-native-compile t)
 
 (use-package diminish)
-#+END_SRC
 
-* Theme
-
-#+BEGIN_SRC emacs-lisp
 ;;; Theme
 (use-package base16-theme
   :config
   (load-theme 'base16-embers t))
-#+END_SRC
 
-* Window Manager
-
-#+BEGIN_SRC emacs-lisp
 ;;; Window manager
 (use-package exwm
   :init
@@ -160,11 +82,7 @@
                             (exwm-workspace-switch-create ,(- i 1)))))
                       (number-sequence 0 9))))
   :bind (("C-c C-q" . exwm-input-send-next-key)))
-#+END_SRC
 
-* General
-
-#+BEGIN_SRC emacs-lisp
 ;;; General
 
 ;; Remove the start screen, use dashboard instead
@@ -218,48 +136,28 @@
 
 ;; Prevent the creation of backup files
 (setq make-backup-files nil)
-#+END_SRC
 
-** Environment Variables
-
-#+BEGIN_SRC emacs-lisp
   ;;; Env vars
 (use-package exec-path-from-shell
   :config
   (exec-path-from-shell-initialize))
-#+END_SRC
 
-** Multiple Cursors
-
-#+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors
   :config
   :bind (("C-S-c C-S-c" . mc/edit-lines)
 	 ("C->" . mc/mark-next-like-this)
 	 ("C-<" . mc/mark-previous-like-this)
 	 ("C-c C-<" . mc/mark-all-like-this)))
-#+END_SRC
 
-** Which Key
-
-#+BEGIN_SRC emacs-lisp
 ;;; Which key
 (use-package which-key
   :diminish which-key-mode
   :config
   (which-key-mode))
-#+END_SRC
 
-** Case Conversion
-
-#+BEGIN_SRC emacs-lisp
 (use-package string-inflection
   :bind (("C-c C-n" . string-inflection-java-style-cycle)))
-#+END_SRC
 
-* UI
-
-#+BEGIN_SRC emacs-lisp
 ;; Turn off scroll bars
 (scroll-bar-mode -1)
 
@@ -277,16 +175,12 @@
 
 ;; Start maximised
 (toggle-frame-maximized)
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
 (use-package subword
   :diminish
   :init
   (global-subword-mode +1))
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
 (use-package windmove
   :config
   (windmove-default-keybindings 'super)
@@ -294,11 +188,7 @@
 
 ;; Undo/redo layouts
 (winner-mode 1)
-#+END_SRC
 
-** Mode line
-
-#+BEGIN_SRC emacs-lisp
 ;; Telephone line
 (use-package telephone-line
   :config
@@ -328,11 +218,7 @@
   (setq battery-load-low 20)
   (setq battery-load-critical 10)
   (display-battery-mode -1))
-#+END_SRC
 
-** Status Bar
-
-#+BEGIN_SRC emacs-lisp
 (use-package minibuffer-line
   :custom-face
   (minibuffer-line ((t (:inherit font-lock-comment-face))))
@@ -343,19 +229,11 @@
                                         (batt-info (battery-format "%b%p%%%% (%t)" (funcall battery-status-function))))
                                     (concat time-info " | " batt-info)))))
   (minibuffer-line-mode))
-#+END_SRC
 
-** Minibuffer
-
-#+BEGIN_SRC emacs-lisp
 (use-package minibuffer-line
   :config
   (setq minibuffer-line-refresh-interval 1))
-#+END_SRC
 
-** Ivy
-
-#+BEGIN_SRC emacs-lisp
 ;; Ivy
 (use-package ivy
   :diminish ivy-mode
@@ -381,11 +259,7 @@
 ;;; Swiper
 (use-package swiper
   :bind (("C-s" . swiper)))
-#+END_SRC
 
-** Amx
-
-#+BEGIN_SRC emacs-lisp
 ;; Amx
 (use-package amx
   :after (ivy counsel)
@@ -396,11 +270,7 @@
   (amx-show-key-bindings nil)
   :config
   (amx-mode 1))
-#+END_SRC
 
-** Dashboard
-
-#+BEGIN_SRC emacs-lisp
 (use-package dashboard
   :config
   (setq dashboard-center-content t)
@@ -409,33 +279,16 @@
   (setq dashboard-items '((projects . 5)
 			  (recents . 5)))
   (dashboard-setup-startup-hook))
-#+END_SRC
 
-** Font
-
-#+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil :font "Iosevka-13")
 (set-frame-font "Iosevka-13" nil t)
-#+END_SRC
 
-* File Browsing
-
-Reuse the current dired buffer.
-
-#+BEGIN_SRC emacs-lisp
 (use-package dired-single)
-#+END_SRC
 
-Collapse single files in nested directories.
-
-#+BEGIN_SRC emacs-lisp
 (use-package dired-collapse
   :init
   (dired-collapse-mode 1))
-#+END_SRC
-* Treemacs
 
-#+BEGIN_SRC emacs-lisp
 ;;; Treemacs
 (use-package treemacs
   :defer t
@@ -471,11 +324,7 @@ Collapse single files in nested directories.
   :after lsp treemacs
   :config
   (lsp-treemacs-sync-mode 1))
-#+END_SRC
 
-* LSP
-
-#+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
   :init
   (setq lsp-keymap-prefix "C-c l")
@@ -510,11 +359,7 @@ Collapse single files in nested directories.
 
 (use-package eldoc
   :diminish eldoc-mode)
-#+END_SRC
 
-* Debugging
-
-#+BEGIN_SRC emacs-lisp
 (use-package dap-mode
   :commands dap-debug
   :config
@@ -523,11 +368,7 @@ Collapse single files in nested directories.
   (require 'dap-hydra)
   (require 'dap-gdb-lldb)
   (dap-gdb-lldb-setup))
-#+END_SRC
 
-* Languages
-
-#+BEGIN_SRC emacs-lisp
 ;;; Languages
 
 ;; Flycheck
@@ -551,57 +392,28 @@ Collapse single files in nested directories.
 (use-package prettier
   :config
   :bind (("C-c C-p" . prettier-prettify)))
-#+END_SRC
 
-** Assembly
-
-#+BEGIN_SRC emacs-lisp
 (use-package nasm-mode
   :config
   (add-hook 'asm-mode-hook 'nasm-mode))
-#+END_SRC
 
-** Docker
-
-#+BEGIN_SRC emacs-lisp
 (use-package dockerfile-mode)
-#+END_SRC
 
-** Elixir
-
-
-#+BEGIN_SRC emacs-lisp
 (use-package elixir-mode)
 
 (add-hook 'elixir-mode-hook
 	  (lambda () (add-hook 'before-save-hook 'elixir-format nil t)))
-#+END_SRC
 
-** Go
-
-#+BEGIN_SRC emacs-lisp
 (use-package go-mode
   :config
   (setq gofmt-command "goimports")
   :hook ((go-mode . flycheck-mode)
 	 (before-save . gofmt-before-save)))
-#+END_SRC
 
-** GraphQL
-
-#+BEGIN_SRC emacs-lisp
 (use-package graphql-mode)
-#+END_SRC
 
-** Groovy
-
-#+BEGIN_SRC emacs-lisp
 (use-package groovy-mode)
-#+END_SRC
 
-** JavaScript
-
-#+BEGIN_SRC emacs-lisp
 (use-package tide
   :ensure t
   :after (typescript-mode company flycheck)
@@ -609,65 +421,31 @@ Collapse single files in nested directories.
 	 (typescript-mode . tide-hl-identifier-mode)
 	 (before-save . tide-format-before-save)
 	 (before-save . global-prettier-mode)))
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
 (load-file "~/.emacs.d/private/gleam-mode/gleam-mode.el")
 (require 'gleam-mode)
 (add-to-list 'auto-mode-alist '("\\.gleam$" . gleam-mode))
-#+END_SRC
 
-** Nix
-
-#+BEGIN_SRC emacs-lisp
 (use-package nix-mode)
-#+END_SRC
 
-** OCaml
-
-#+BEGIN_SRC emacs-lisp
 (use-package tuareg)
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
 (use-package dune)
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
 (use-package ocamlformat)
-#+END_SRC
 
-** PlantUML
-
-#+BEGIN_SRC emacs-lisp
 (use-package plantuml-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
   (add-to-list 'display-buffer-alist '("*PLANTUML Preview*" display-buffer-same-window))
   (setq plantuml-default-exec-mode 'jar))
-#+END_SRC
 
-** Protobuf
-
-#+BEGIN_SRC emacs-lisp
 (use-package protobuf-mode)
-#+END_SRC
 
-** Rescript
-
-#+BEGIN_SRC emacs-lisp
 (use-package rescript-mode)
-#+END_SRC
 
-** RON (Rusty Object Notation)
-
-#+BEGIN_SRC emacs-lisp
 (use-package ron-mode)
-#+END_SRC
 
-** Rust
-
-#+BEGIN_SRC emacs-lisp
 (use-package racer)
 
 (use-package rustic
@@ -681,61 +459,32 @@ Collapse single files in nested directories.
 	 (racer-mode . eldoc-mode)))
 
 (push 'rustic-clippy flycheck-checkers)
-#+END_SRC
 
-** Scala
-
-#+BEGIN_SRC emacs-lisp
 (use-package scala-mode
   :interpreter
   ("scala" . scala-mode))
 
 (use-package lsp-metals)
-#+END_SRC
 
-** SQL
-
-#+BEGIN_SRC emacs-lisp
 (use-package ejc-sql
   :hook (ejc-sql-minor-mode-hook . company-mode)
   :config (use-package ejc-company
 	    :ensure nil
 	    :after ejc-sql-mode
 	    :config (add-to-list (make-local-variable 'company-backends) 'ejc-company-backend)))
-#+END_SRC
 
-** Terraform
-
-#+BEGIN_SRC emacs-lisp
 (use-package terraform-mode
   :hook (terraform-mode . terraform-format-on-save-mode))
-#+END_SRC
 
-** TOML
-
-#+BEGIN_SRC emacs-lisp
 (use-package toml-mode
   :hook ((toml-mode . display-line-numbers-mode)))
 
-#+END_SRC
-
-** YAML
-
-#+BEGIN_SRC emacs-lisp
 (use-package yaml-mode
   :hook ((yaml-mode . flycheck-mode)
 	 (yaml-mode . display-line-numbers-mode)))
-#+END_SRC
 
-** Zig
-
-#+BEGIN_SRC emacs-lisp
 (use-package zig-mode)
-#+END_SRC
 
-* Snippets
-
-#+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :diminish yas-minor-mode
   :config
@@ -745,20 +494,10 @@ Collapse single files in nested directories.
   (yas-global-mode))
 
 (use-package yasnippet-snippets)
-#+END_SRC
 
-* Version Control
-
-** General
-
-#+BEGIN_SRC emacs-lisp
 ;; Always follow symlinks
 (setq vc-follow-symlinks t)
-#+END_SRC
 
-** Git
-
-#+BEGIN_SRC emacs-lisp
 ;;; Git
 (use-package magit
   :config
@@ -783,11 +522,7 @@ Collapse single files in nested directories.
   :config
   (global-diff-hl-mode)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
-#+END_SRC
 
-* Terminal
-
-#+BEGIN_SRC emacs-lisp
 ;;; Terminal
 (use-package vterm
   :init
@@ -818,21 +553,12 @@ Collapse single files in nested directories.
 (use-package xclip
   :config
   (xclip-mode 1))
-#+END_SRC
 
-* Org
-
-#+BEGIN_SRC emacs-lisp
 (require 'org-tempo)
 
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 
 (use-package toc-org)
-#+END_SRC
-
-* Company
-
-#+BEGIN_SRC emacs-lisp
 
 (use-package company
   :diminish company-mode
@@ -844,17 +570,8 @@ Collapse single files in nested directories.
   ; Wrap list around
   (setq company-selection-wrap-around t))
 
-#+END_SRC
-
-* Kubernetes
-
-#+BEGIN_SRC emacs-lisp
 (use-package kubel)
-#+END_SRC
 
-* Projectile
-
-#+BEGIN_SRC emacs-lisp
 ;;; Projectile
 (use-package projectile
   :diminish
@@ -866,17 +583,8 @@ Collapse single files in nested directories.
   (setq projectile-switch-project-action 'projectile-dired)
   (setq projectile-git-submodule-command nil)
   :bind (("C-c p f" . projectile-find-file)))
-#+END_SRC
 
-* Server
-
-#+BEGIN_SRC emacs-lisp
 (server-start)
-#+END_SRC
 
-* Provide
-
-#+BEGIN_SRC emacs-lisp
 (provide 'init)
 ;;; init.el ends here
-#+END_SRC

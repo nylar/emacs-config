@@ -6,7 +6,8 @@
 - [[#custom][Custom]]
 - [[#package-management][Package Management]]
 - [[#theme][Theme]]
-- [[#window-manager][Window Manager]]
+- [[#reload-init][Reload Init]]
+- [[#window-manager-linux][Window Manager (Linux)]]
 - [[#general][General]]
   - [[#environment-variables][Environment Variables]]
   - [[#multiple-cursors][Multiple Cursors]]
@@ -15,7 +16,6 @@
 - [[#ui][UI]]
   - [[#mode-line][Mode line]]
   - [[#status-bar][Status Bar]]
-  - [[#minibuffer][Minibuffer]]
   - [[#ivy][Ivy]]
   - [[#amx][Amx]]
   - [[#dashboard][Dashboard]]
@@ -26,12 +26,14 @@
 - [[#debugging][Debugging]]
 - [[#languages][Languages]]
   - [[#assembly][Assembly]]
+  - [[#dart][Dart]]
   - [[#docker][Docker]]
   - [[#elixir][Elixir]]
   - [[#go][Go]]
   - [[#graphql][GraphQL]]
   - [[#groovy][Groovy]]
   - [[#javascript][JavaScript]]
+  - [[#just][Just]]
   - [[#nix][Nix]]
   - [[#ocaml][OCaml]]
   - [[#plantuml][PlantUML]]
@@ -47,12 +49,11 @@
   - [[#zig][Zig]]
 - [[#snippets][Snippets]]
 - [[#version-control][Version Control]]
-  - [[#general-1][General]]
+  - [[#general][General]]
   - [[#git][Git]]
 - [[#terminal][Terminal]]
 - [[#org][Org]]
 - [[#company][Company]]
-- [[#kubernetes][Kubernetes]]
 - [[#projectile][Projectile]]
 - [[#server][Server]]
 - [[#provide][Provide]]
@@ -105,16 +106,24 @@
 
 #+BEGIN_SRC emacs-lisp
 ;;; Theme
-(use-package base16-theme
-  :config
-  (load-theme 'base16-embers t))
+(load-theme 'fleetish t) ;; TODO: Add to Melpa
 #+END_SRC
 
-* Window Manager
+* Reload Init
+#+BEGIN_SRC emacs-lisp
+(defun reload-init-file ()
+  (interactive)
+  (load-file user-init-file))
+
+(global-set-key (kbd "C-c C-l") 'reload-init-file)
+#+END_SRC
+
+* Window Manager (Linux)
 
 #+BEGIN_SRC emacs-lisp
 ;;; Window manager
 (use-package exwm
+  :when (memq window-system '(x))
   :init
   (require 'exwm-config)
   (require 'exwm-randr)
@@ -130,35 +139,35 @@
   (exwm-config-example)
   (setq exwm-workspace-number 4)
   (setq exwm-manage-configurations
-   '(((member exwm-class-name '("Nightly" "firefox-nightly"))
-	   char-mode t)))
+        '(((member exwm-class-name '("Nightly" "firefox"))
+           char-mode t)))
 
   ;; Config example turns on ido, turn it off
   (ido-mode 0)
   ;; Map start workspaces to names
   (setq exwm-workspace-index-map
-	(lambda (index)
-	  (let ((named-workspaces ["dev" "www" "k8s" "music"]))
+        (lambda (index)
+          (let ((named-workspaces ["dev" "www" "k8s" "music"]))
             (if (< index (length named-workspaces))
-		(elt named-workspaces index)
-	      (number-to-string (1+ index))))))
+                (elt named-workspaces index)
+              (number-to-string (1+ index))))))
   (setq exwm-input-global-keys
-          `(
-            ;; 's-r': Reset (to line-mode).
-            ([?\s-r] . exwm-reset)
-            ;; 's-w': Switch workspace.
-            ([?\s-w] . exwm-workspace-switch)
-            ;; 's-&': Launch application.
-            ([?\s-&] . (lambda (command)
-                         (interactive (list (read-shell-command "$ ")))
-                         (start-process-shell-command command nil command)))
-            ;; 's-N': Switch to certain workspace.
-            ,@(mapcar (lambda (i)
-                        `(,(kbd (format "s-%d" i)) .
-                          (lambda ()
-                            (interactive)
-                            (exwm-workspace-switch-create ,(- i 1)))))
-                      (number-sequence 0 9))))
+        `(
+          ;; 's-r': Reset (to line-mode).
+          ([?\s-r] . exwm-reset)
+          ;; 's-w': Switch workspace.
+          ([?\s-w] . exwm-workspace-switch)
+          ;; 's-&': Launch application.
+          ([?\s-&] . (lambda (command)
+                       (interactive (list (read-shell-command "$ ")))
+                       (start-process-shell-command command nil command)))
+          ;; 's-N': Switch to certain workspace.
+          ,@(mapcar (lambda (i)
+                      `(,(kbd (format "s-%d" i)) .
+                        (lambda ()
+                          (interactive)
+                          (exwm-workspace-switch-create ,(- i 1)))))
+                    (number-sequence 0 9))))
   :bind (("C-c C-q" . exwm-input-send-next-key)))
 #+END_SRC
 
@@ -319,21 +328,13 @@
                              (evil   . (telephone-line-airline-position-segment))))
 
   (telephone-line-mode 1))
-
-(use-package battery
-  :config
-  (setq battery-mode-line-format "[%b%p%%] ")
-  (setq battery-mode-line-limit 99)
-  (setq battery-update-interval 180)
-  (setq battery-load-low 20)
-  (setq battery-load-critical 10)
-  (display-battery-mode -1))
 #+END_SRC
 
 ** Status Bar
 
 #+BEGIN_SRC emacs-lisp
 (use-package minibuffer-line
+  :when (memq window-system '(x))
   :custom-face
   (minibuffer-line ((t (:inherit font-lock-comment-face))))
   :config
@@ -343,14 +344,6 @@
                                         (batt-info (battery-format "%b%p%%%% (%t)" (funcall battery-status-function))))
                                     (concat time-info " | " batt-info)))))
   (minibuffer-line-mode))
-#+END_SRC
-
-** Minibuffer
-
-#+BEGIN_SRC emacs-lisp
-(use-package minibuffer-line
-  :config
-  (setq minibuffer-line-refresh-interval 1))
 #+END_SRC
 
 ** Ivy
@@ -493,14 +486,16 @@ Collapse single files in nested directories.
   (yaml-mode . lsp)
   (zig-mode . lsp)
   :config
+  (setq lsp-rust-analyzer-server-display-inlay-hints t)
   (setq lsp-enable-snippet nil)
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-rust-analyzer-cargo-watch-command "clippy")
-  (setq lsp-elixir-server-command '("/usr/lib/elixir-ls/language_server.sh"))
   (add-to-list 'lsp-file-watch-ignored "[/\\\\]data$")
   (add-to-list 'lsp-file-watch-ignored "[/\\\\].git$")
   (add-to-list 'lsp-file-watch-ignored "[/\\\\].submodules$")
   :bind (("C-c h" . lsp-describe-thing-at-point)))
+
+(use-package lsp-dart)
 
 (use-package lsp-java)
 
@@ -561,6 +556,12 @@ Collapse single files in nested directories.
   (add-hook 'asm-mode-hook 'nasm-mode))
 #+END_SRC
 
+** Dart
+
+#+BEGIN_SRC emacs-lisp
+(use-package dart-mode)
+#+END_SRC
+
 ** Docker
 
 #+BEGIN_SRC emacs-lisp
@@ -611,10 +612,10 @@ Collapse single files in nested directories.
 	 (before-save . global-prettier-mode)))
 #+END_SRC
 
+** Just
+
 #+BEGIN_SRC emacs-lisp
-(load-file "~/.emacs.d/private/gleam-mode/gleam-mode.el")
-(require 'gleam-mode)
-(add-to-list 'auto-mode-alist '("\\.gleam$" . gleam-mode))
+(use-package just-mode)
 #+END_SRC
 
 ** Nix
@@ -668,17 +669,12 @@ Collapse single files in nested directories.
 ** Rust
 
 #+BEGIN_SRC emacs-lisp
-(use-package racer)
-
 (use-package rustic
   :mode ("\\.rs$" . rustic-mode)
   :config
   (setq rustic-format-trigger 'on-save)
   (setq rustic-lsp-server 'rust-analyzer)
-  (setq rustic-format-display-method 'ignore)
-  (add-hook 'lsp-mode (lambda () (lsp-rust-analyzer-inlay-hints-mode)))
-  :hook ((rust-mode . racer-mode)
-	 (racer-mode . eldoc-mode)))
+  (setq rustic-format-display-method 'ignore))
 
 (push 'rustic-clippy flycheck-checkers)
 #+END_SRC
@@ -816,6 +812,7 @@ Collapse single files in nested directories.
 
 ;; Copy/paste from the terminal
 (use-package xclip
+  :when (memq window-system '(x))
   :config
   (xclip-mode 1))
 #+END_SRC
@@ -844,12 +841,6 @@ Collapse single files in nested directories.
   ; Wrap list around
   (setq company-selection-wrap-around t))
 
-#+END_SRC
-
-* Kubernetes
-
-#+BEGIN_SRC emacs-lisp
-(use-package kubel)
 #+END_SRC
 
 * Projectile

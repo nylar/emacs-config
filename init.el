@@ -31,12 +31,17 @@
 (use-package diminish)
 
 ;;; Theme
-(use-package base16-theme
-  :config
-  (load-theme 'base16-embers t))
+(load-theme 'fleetish t) ;; TODO: Add to Melpa
+
+(defun reload-init-file ()
+  (interactive)
+  (load-file user-init-file))
+
+(global-set-key (kbd "C-c C-l") 'reload-init-file)
 
 ;;; Window manager
 (use-package exwm
+  :when (memq window-system '(x))
   :init
   (require 'exwm-config)
   (require 'exwm-randr)
@@ -52,35 +57,35 @@
   (exwm-config-example)
   (setq exwm-workspace-number 4)
   (setq exwm-manage-configurations
-   '(((member exwm-class-name '("Nightly" "firefox-nightly"))
-	   char-mode t)))
+        '(((member exwm-class-name '("Nightly" "firefox"))
+           char-mode t)))
 
   ;; Config example turns on ido, turn it off
   (ido-mode 0)
   ;; Map start workspaces to names
   (setq exwm-workspace-index-map
-	(lambda (index)
-	  (let ((named-workspaces ["dev" "www" "k8s" "music"]))
+        (lambda (index)
+          (let ((named-workspaces ["dev" "www" "k8s" "music"]))
             (if (< index (length named-workspaces))
-		(elt named-workspaces index)
-	      (number-to-string (1+ index))))))
+                (elt named-workspaces index)
+              (number-to-string (1+ index))))))
   (setq exwm-input-global-keys
-          `(
-            ;; 's-r': Reset (to line-mode).
-            ([?\s-r] . exwm-reset)
-            ;; 's-w': Switch workspace.
-            ([?\s-w] . exwm-workspace-switch)
-            ;; 's-&': Launch application.
-            ([?\s-&] . (lambda (command)
-                         (interactive (list (read-shell-command "$ ")))
-                         (start-process-shell-command command nil command)))
-            ;; 's-N': Switch to certain workspace.
-            ,@(mapcar (lambda (i)
-                        `(,(kbd (format "s-%d" i)) .
-                          (lambda ()
-                            (interactive)
-                            (exwm-workspace-switch-create ,(- i 1)))))
-                      (number-sequence 0 9))))
+        `(
+          ;; 's-r': Reset (to line-mode).
+          ([?\s-r] . exwm-reset)
+          ;; 's-w': Switch workspace.
+          ([?\s-w] . exwm-workspace-switch)
+          ;; 's-&': Launch application.
+          ([?\s-&] . (lambda (command)
+                       (interactive (list (read-shell-command "$ ")))
+                       (start-process-shell-command command nil command)))
+          ;; 's-N': Switch to certain workspace.
+          ,@(mapcar (lambda (i)
+                      `(,(kbd (format "s-%d" i)) .
+                        (lambda ()
+                          (interactive)
+                          (exwm-workspace-switch-create ,(- i 1)))))
+                    (number-sequence 0 9))))
   :bind (("C-c C-q" . exwm-input-send-next-key)))
 
 ;;; General
@@ -210,16 +215,8 @@
 
   (telephone-line-mode 1))
 
-(use-package battery
-  :config
-  (setq battery-mode-line-format "[%b%p%%] ")
-  (setq battery-mode-line-limit 99)
-  (setq battery-update-interval 180)
-  (setq battery-load-low 20)
-  (setq battery-load-critical 10)
-  (display-battery-mode -1))
-
 (use-package minibuffer-line
+  :when (memq window-system '(x))
   :custom-face
   (minibuffer-line ((t (:inherit font-lock-comment-face))))
   :config
@@ -229,10 +226,6 @@
                                         (batt-info (battery-format "%b%p%%%% (%t)" (funcall battery-status-function))))
                                     (concat time-info " | " batt-info)))))
   (minibuffer-line-mode))
-
-(use-package minibuffer-line
-  :config
-  (setq minibuffer-line-refresh-interval 1))
 
 ;; Ivy
 (use-package ivy
@@ -342,14 +335,16 @@
   (yaml-mode . lsp)
   (zig-mode . lsp)
   :config
+  (setq lsp-rust-analyzer-server-display-inlay-hints t)
   (setq lsp-enable-snippet nil)
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-rust-analyzer-cargo-watch-command "clippy")
-  (setq lsp-elixir-server-command '("/usr/lib/elixir-ls/language_server.sh"))
   (add-to-list 'lsp-file-watch-ignored "[/\\\\]data$")
   (add-to-list 'lsp-file-watch-ignored "[/\\\\].git$")
   (add-to-list 'lsp-file-watch-ignored "[/\\\\].submodules$")
   :bind (("C-c h" . lsp-describe-thing-at-point)))
+
+(use-package lsp-dart)
 
 (use-package lsp-java)
 
@@ -397,6 +392,8 @@
   :config
   (add-hook 'asm-mode-hook 'nasm-mode))
 
+(use-package dart-mode)
+
 (use-package dockerfile-mode)
 
 (use-package elixir-mode)
@@ -422,9 +419,7 @@
 	 (before-save . tide-format-before-save)
 	 (before-save . global-prettier-mode)))
 
-(load-file "~/.emacs.d/private/gleam-mode/gleam-mode.el")
-(require 'gleam-mode)
-(add-to-list 'auto-mode-alist '("\\.gleam$" . gleam-mode))
+(use-package just-mode)
 
 (use-package nix-mode)
 
@@ -446,17 +441,12 @@
 
 (use-package ron-mode)
 
-(use-package racer)
-
 (use-package rustic
   :mode ("\\.rs$" . rustic-mode)
   :config
   (setq rustic-format-trigger 'on-save)
   (setq rustic-lsp-server 'rust-analyzer)
-  (setq rustic-format-display-method 'ignore)
-  (add-hook 'lsp-mode (lambda () (lsp-rust-analyzer-inlay-hints-mode)))
-  :hook ((rust-mode . racer-mode)
-	 (racer-mode . eldoc-mode)))
+  (setq rustic-format-display-method 'ignore))
 
 (push 'rustic-clippy flycheck-checkers)
 
@@ -551,6 +541,7 @@
 
 ;; Copy/paste from the terminal
 (use-package xclip
+  :when (memq window-system '(x))
   :config
   (xclip-mode 1))
 
@@ -569,8 +560,6 @@
   (setq company-minimum-prefix-length 1)
   ; Wrap list around
   (setq company-selection-wrap-around t))
-
-(use-package kubel)
 
 ;;; Projectile
 (use-package projectile

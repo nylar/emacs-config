@@ -31,7 +31,9 @@
 (use-package diminish)
 
 ;;; Theme
-(load-theme 'fleetish t) ;; TODO: Add to Melpa
+(use-package fleetish-theme
+  :config
+  (load-theme 'fleetish t))
 
 (defun reload-init-file ()
   (interactive)
@@ -142,7 +144,7 @@
 ;; Prevent the creation of backup files
 (setq make-backup-files nil)
 
-  ;;; Env vars
+;;; Env vars
 (use-package exec-path-from-shell
   :config
   (exec-path-from-shell-initialize))

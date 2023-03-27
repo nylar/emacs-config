@@ -106,7 +106,9 @@
 
 #+BEGIN_SRC emacs-lisp
 ;;; Theme
-(load-theme 'fleetish t) ;; TODO: Add to Melpa
+(use-package fleetish-theme
+  :config
+  (load-theme 'fleetish t))
 #+END_SRC
 
 * Reload Init
